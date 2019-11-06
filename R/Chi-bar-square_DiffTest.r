@@ -62,15 +62,110 @@
 
 ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL) {
 
-  k <- dim(S)[1]
+  # Checks:
+  if(is.null(u)){
+    if(length(q) != 1){
+      print(paste("The argument q should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
+      stop()
+    }
+    if(q %% 1 == 0){
+      print(paste("The argument q should be an integer."))
+      stop()
+    }
+  }
+  #
+  # Check on S
+  if(length(S) != 1){
+    if(is.null(dim(S))){
+      if(!is.null(length(S))){
+        print(paste("The argument S is not a matrix of size k times k."))
+        stop()
+      }else{
+        print(paste("The argument S is not found: The k times k covariance matrix of the k constrained variances is unknown, but should be part of the input."))
+        stop()
+      }
+    }
+    k <- dim(S)[1]
+    #
+    if(dim(S)[1] != dim(S)[2]){
+      print(paste("The covariance matrix of the k constrained variances S should be a square matrix of size k times k, with k = ", k, "."))
+      stop()
+    }
+    if(length(dim(S)) > 2){
+      print(paste("The covariance matrix of the k constrained variances S should be an k times k matrix, with k = ", k, "."))
+      stop()
+    }
+  } else{
+    k <- 1
+  }
+
   if(is.null(u)){
     n <- q-k
+    if(n < 0){
+      print(paste("The input for k (i.e., the number of constrained variances) cannot exceed q (i.e., the number of latent variables, that is, the total number of variances). Either q or the dimension of S is incorrect, since n = q - k < 0, with q = ", q, "and k = ", k, "."))
+      stop()
+    }
     u <- k*n + k*(k-1)/2
+  }else{
+    if(length(u) != 1){
+      print(paste("The argument u should be a scalar, that is, one number, that is, a vector with one element."))
+      stop()
+    }
   }
   #u = unconstrained parameter of interest = number of unconstrained variances and unconstrained covariances; u <- k*n + k*(k-1)/2, n = number of nuisance parameters
   #k = number of constrained variances
   #The other parameters are called nuisance parameters and are not needed in the calculation; the number of nuisance parameters is denoted by n.
   #S = the k-times-k covariance matrix of the (k) constrained variances.
+
+  if(!is.null(Chi2_clpm) & length(Chi2_clpm) != 1){
+    print(paste("The argument Chi2_clpm should be a scalar, that is, one number, that is, a vector with one element (or NULL)."))
+    stop()
+  }
+  if(!is.null(Chi2_riclpm) & length(Chi2_riclpm) != 1){
+    print(paste("The argument Chi2_riclpm should be a scalar, that is, one number, that is, a vector with one element (or NULL)."))
+    stop()
+  }
+  if(!is.null(df_clpm)){
+    if(length(df_clpm) != 1){
+      print(paste("The argument df_clpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
+      stop()
+    }
+    if(df_clpm %% 1 == 0){
+      print(paste("The argument df_clpm should be an integer."))
+      stop()
+    }
+  }
+  if(!is.null(df_riclpm)){
+    if(length(df_riclpm) != 1){
+      print(paste("The argument df_riclpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
+      stop()
+    }
+    if(df_riclpm %% 1 == 0){
+      print(paste("The argument df_riclpm should be an integer."))
+      stop()
+    }
+  }
+  #
+  if(length(alpha) != 1){
+    print(paste("The argument alpha should be a scalar, that is, one number, that is, a vector with one element."))
+    stop()
+  }
+  #
+  if(!is.logical(bootstrap)){
+    print(paste("The argument bootstrap should be logical, that is, have the value T(RUE) or F(ALSE)."))
+    stop()
+  }
+  if(bootstrap == TRUE){
+    if(length(seed) != 1){
+      print(paste("The argument seed should be a scalar, that is, one number, that is, a vector with one element."))
+      stop()
+    }
+    if(length(iter) != 1){
+      print(paste("The argument iter should be a scalar, that is, one number, that is, a vector with one element."))
+      stop()
+    }
+  }
+
 
   ##########################################################################
 
@@ -88,10 +183,6 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
 
   ##########################################################################
   ##########################################################################
-
-
-  # TO DO checks - zie hoofd file van Shiny app
-
 
 
   # LPs/Weights
