@@ -70,7 +70,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       print(paste("The argument q should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
       stop()
     }
-    if(q %% 1 == 0){
+    if(q %% 1 != 0){
       print(paste("The argument q should be an integer."))
       stop()
     }
@@ -132,7 +132,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       print(paste("The argument df_clpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
       stop()
     }
-    if(df_clpm %% 1 == 0){
+    if(df_clpm %% 1 != 0){
       print(paste("The argument df_clpm should be an integer."))
       stop()
     }
@@ -142,7 +142,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       print(paste("The argument df_riclpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
       stop()
     }
-    if(df_riclpm %% 1 == 0){
+    if(df_riclpm %% 1 != 0){
       print(paste("The argument df_riclpm should be an integer."))
       stop()
     }
