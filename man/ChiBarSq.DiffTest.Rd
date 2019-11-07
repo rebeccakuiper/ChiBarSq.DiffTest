@@ -73,17 +73,19 @@ ChiBarSq.DiffTest(q, S, bootstrap = T, seed = 123, iter = 100000)
 # Run function to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
 ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
 
-# Run function to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+# Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+# For simplicity, we use the same example as above and calculate u based on input above - normally you would know u (and not q).
 q <- 2
 k <- 2
 n <- q-k
-u <- k*n + k*(k-1)/2
+u <- k*n + k*(k-1)/2 # This expression holds in case of k constrained variances and thus also in case of k random intercepts.
+#
 ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u)
 # Or
 ChiBarSq.DiffTest(NULL, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u)
 # But NOT:
 #ChiBarSq.DiffTest(S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u) # Note: This does not work (properly) and gives an error.
 #
-# Note: This is now again based on testing the CLPM versus the RI-CLPM, but this code is most helpful in case of a more general test than a variance test. For more details, see Stoel et al. (2006).
+# Note: This is now again based on testing the CLPM versus the RI-CLPM, but this code is most helpful in case of a more general test than a 'k constrained variance test'. For more details, see Stoel et al. (2006).
 
 }
