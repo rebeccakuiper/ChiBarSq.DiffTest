@@ -259,11 +259,17 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       X <- seq(Min,Max,by=Step)
       ChiMix <- 0
       for(i in 1:k){
-        ChiMix <- weight[i]*dchisq(X, (u+i))
+        ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
       }
       plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
       lines(X, ChiMix)
       abline(v=c2, col = "red")
+      #
+      legend("topright",
+             legend = c("critical value"),
+             lty = 1,
+             col = c("red")
+      )
     }
 
 
@@ -287,6 +293,29 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       #if(p < 0.001){
       #  p <- paste(p, " < .001")
       #}
+
+
+      # Plot
+      if(PrintPlot == T){
+        if(Max < c2_compare){
+          Max <- c2_compare + 1
+          X <- seq(Min,Max,by=Step)
+          ChiMix <- 0
+          for(i in 1:k){
+            ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
+          }
+        }
+        plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
+        lines(X, ChiMix)
+        abline(v=c2, col = "red")
+        abline(v=c2_compare, col = "blue")
+        #
+        legend("topright",
+               legend = c("critical value", "observed value"),
+               lty = 1,
+               col = c("red", "blue")
+        )
+      }
 
 
       diff_df = df_clpm - df_riclpm
