@@ -14,6 +14,10 @@
 #' @param seed The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.
 #' @param iter The number of iterations, used in case bootstrap = TRUE. By changing this number, the sensitivity/precision of the results can be inspected. By default, iter = 100000.
 #' @param u The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.
+#' @param PrintPlot Optional. Indicator whether Chi-bar-square distribution plot should be printed (TRUE; default) or not (FALSE); together with the critical value.
+#' @param Min Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.
+#' @param Max Optional. Maximum time used in the Chi-bar-square distribution plot. By default, Max = 20. If Max is lower than critical value c2, then it is changed to c2+1.
+#' @param Step Optional. The step-size taken in the Chi-bar-square distribution plot. By default, Step = 1.
 #'
 #' @return The output comprises, among others, the Chi-bar-square weigths and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
 #' @importFrom quadprog solve.QP
@@ -62,7 +66,7 @@
 #' # Note: This is now again based on testing the CLPM versus the RI-CLPM, but this code is most helpful in case of a more general test than a 'k constrained variance test'. For more details, see Stoel et al. (2006).
 #'
 
-ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL) {
+ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL, PrintPlot = TRUE, Min = 0, Max = 20, Step = 1) {
 
   # Checks:
   if(is.null(u)){
@@ -167,6 +171,23 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       stop()
     }
   }
+  #
+  if(PrintPlot != T & PrintPlot != F){
+    print(paste("The argument 'PrintPlot' should be TRUE or FALSE, not ", PrintPlot, "."))
+    stop()
+  }
+  if(length(Min) != 1){
+    print(paste("The argument Min should be a scalar, that is, one number, that is, a vector with one element."))
+    stop()
+  }
+  if(length(Max) != 1){
+    print(paste("The argument Max should be a scalar, that is, one number, that is, a vector with one element."))
+    stop()
+  }
+  if(length(Step) != 1){
+    print(paste("The argument Step should be a scalar, that is, one number, that is, a vector with one element."))
+    stop()
+  }
 
 
   ##########################################################################
@@ -230,6 +251,20 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     return(final)
   }else{
     c2 <- sol$x
+
+
+    # Plot
+    if(PrintPlot == T){
+      if(Max < c2){Max <- c2 + 1}
+      X <- seq(Min,Max,by=Step)
+      ChiMix <- 0
+      for(i in 1:k){
+        ChiMix <- weight[i]*dchisq(X, (u+i))
+      }
+      plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
+      lines(X, ChiMix)
+      abline(v=c2, col = "red")
+    }
 
 
     #if( (Chi2_clpm == 0) & (Chi2_riclpm == 0) ){

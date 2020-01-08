@@ -15,7 +15,11 @@ ChiBarSq.DiffTest(
   bootstrap = FALSE,
   seed = 123,
   iter = 1e+05,
-  u = NULL
+  u = NULL,
+  PrintPlot = TRUE,
+  Min = 0,
+  Max = 20,
+  Step = 1
 )
 }
 \arguments{
@@ -41,6 +45,14 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 \item{iter}{The number of iterations, used in case bootstrap = TRUE. By changing this number, the sensitivity/precision of the results can be inspected. By default, iter = 100000.}
 
 \item{u}{The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.}
+
+\item{PrintPlot}{Optional. Indicator whether Chi-bar-square distribution plot should be printed (TRUE; default) or not (FALSE); together with the critical value.}
+
+\item{Min}{Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.}
+
+\item{Max}{Optional. Maximum time used in the Chi-bar-square distribution plot. By default, Max = 20. If Max is lower than critical value c2, then it is changed to c2+1.}
+
+\item{Step}{Optional. The step-size taken in the Chi-bar-square distribution plot. By default, Step = 1.}
 }
 \value{
 The output comprises, among others, the Chi-bar-square weigths and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
