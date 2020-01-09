@@ -258,7 +258,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       if(Max < c2){Max <- c2 + 1}
       X <- seq(Min,Max,by=Step)
       ChiMix <- 0
-      for(i in 1:k){
+      for(i in 0:k){
         ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
       }
       plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
@@ -301,7 +301,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
           Max <- c2_compare + 1
           X <- seq(Min,Max,by=Step)
           ChiMix <- 0
-          for(i in 1:k){
+          for(i in 0:k){
             ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
           }
         }
