@@ -28,8 +28,9 @@
 #' @examples
 #'
 #' # Compare fit CLPM vs RI-CLPM
+#' # For an elaborate example, see https://ellenhamaker.github.io/RI-CLPM/lavaan.html#(bar{chi}^{2})-test.
 #'
-#' # Input needed in examples below:
+#' # Specification of input needed in the examples below:
 #' # There are 2 random intercepts in the RI-CLPM (omega and kappa): q = k = 2
 #' q <- 2
 #' # The full covariance matrix of the random intercepts is:
@@ -60,8 +61,9 @@
 #' ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u)
 #' # Or
 #' ChiBarSq.DiffTest(NULL, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u)
-#' # But NOT:
+#' # But do NOT leave the q-argument out like this:
 #' #ChiBarSq.DiffTest(S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm, u = u) # Note: This does not work (properly) and gives an error.
+#' # It is possible to use: ChiBarSq.DiffTest(S = S, Chi2_clpm = Chi2_clpm, Chi2_riclpm = Chi2_riclpm, df_clpm = df_clpm, df_riclpm = df_riclpm, u = u)
 #' #
 #' # Note: This is now again based on testing the CLPM versus the RI-CLPM, but this code is most helpful in case of a more general test than a 'k constrained variance test'. For more details, see Stoel et al. (2006).
 #'
