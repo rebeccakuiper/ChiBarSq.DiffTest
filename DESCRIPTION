@@ -12,3 +12,8 @@ License: GNU General Public License Version >=2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0.9000
+Imports:
+quadprog, 
+mvtnorm,
+ic.infer,
+nleqslv
