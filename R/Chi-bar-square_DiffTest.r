@@ -5,16 +5,16 @@
 #' @param q The total number of variances (q = n + k), that is, the sum of the number of nuisance variances (n) and the number of constrained variances (k) whose values may be on the boundary of the parameter space under the null and the alternative hypotheses, that is, the number of random intercepts. When testing RI-CLPM vs CLPM (see Hamaker et al., 2015), q = k; in case of another test of variances (see Stoel et al., 2006), q >= k.
 #' Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstrained covariances.
 #' @param S The k times k covariance matrix of the k constrained variances.
-#' @param Chi2_clpm The Chi-square value for the CLPM. In case of another test of variances, this refers to the Chi-square of the model with the k constrained variances (or, in general, the more constrained model). By default, Chi2_clpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.
-#' @param Chi2_riclpm The Chi-square value for the RI-CLPM. In case of another test of variances, this refers to the Chi-square of the model without the k constrained variances (or, in general, the less constrained model). By default, Chi2_riclpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.
-#' @param df_clpm The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.
-#' @param df_riclpm The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.
+#' @param Chi2_clpm The Chi-square value for the CLPM. In case of another test of variances, this refers to the Chi-square of the model with the k constrained variances (or, in general, the more constrained model). By default, Chi2_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
+#' @param Chi2_riclpm The Chi-square value for the RI-CLPM. In case of another test of variances, this refers to the Chi-square of the model without the k constrained variances (or, in general, the less constrained model). By default, Chi2_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
+#' @param df_clpm The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
+#' @param df_riclpm The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
 #' @param alpha The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.
-#' @param bootstrap Indicator (FALSE/TRUE) to determine the Chi-bar-square weigths based on bootstrap (instead of using the package ic.infer). By default, bootstrap = FALSE.
+#' @param bootstrap Indicator (FALSE/TRUE or 0/1) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).
 #' @param seed The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.
 #' @param iter The number of iterations, used in case bootstrap = TRUE. By changing this number, the sensitivity/precision of the results can be inspected. By default, iter = 100000.
 #' @param u The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.
-#' @param PrintPlot Optional. Indicator whether Chi-bar-square distribution plot should be printed (TRUE; default) or not (FALSE); together with the critical value.
+#' @param PrintPlot Optional. Indicator (FALSE/TRUE or 0/1) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).
 #' @param Min Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.
 #' @param Max Optional. Maximum time used in the Chi-bar-square distribution plot. By default, Max = 20. If Max is lower than critical value c2, then it is changed to c2+1.
 #' @param Step Optional. The step-size taken in the Chi-bar-square distribution plot. By default, Step = 1.
@@ -42,16 +42,16 @@
 #' df_clpm <- 4   #The df in CLPM is 4
 #' df_riclpm <- 1 #The df in RI-CLPM is 1
 #'
-#' # Run function to obtain Chi-bar-square weigths and critical value for the Chi-bar-square statistic
+#' # Run function to obtain Chi-bar-square weights and critical value for the Chi-bar-square statistic
 #' ChiBarSq.DiffTest(q, S)
 #'
-#' # Run function to obtain Chi-bar-square weigths based on bootstrap
+#' # Run function to obtain Chi-bar-square weights based on bootstrap
 #' ChiBarSq.DiffTest(q, S, bootstrap = T, seed = 123, iter = 100000)
 #'
-#' # Run function to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+#' # Run function to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 #' ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
 #'
-#' # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+#' # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 #' # For simplicity, we use the same example as above and calculate u based on input above - normally you would know u (and not q).
 #' q <- 2
 #' k <- 2
@@ -86,21 +86,21 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   if(length(S) != 1){
     if(is.null(dim(S))){
       if(!is.null(length(S))){
-        print(paste("The argument S is not a matrix of size k times k."))
+        print(paste0("The argument S is not a matrix of size k times k. It is of size ", dim(S)[1], " times ", dim(S)[2], "."))
         stop()
       }else{
-        print(paste("The argument S is not found: The k times k covariance matrix of the k constrained variances is unknown, but should be part of the input."))
+        print(paste0("The argument S is not found: The k times k covariance matrix of the k constrained variances S is unknown, but should be part of the input."))
         stop()
       }
     }
     k <- dim(S)[1]
     #
     if(dim(S)[1] != dim(S)[2]){
-      print(paste("The covariance matrix of the k constrained variances S should be a square matrix of size k times k, with k = ", k, "."))
+      print(paste0("The covariance matrix of the k constrained variances S should be a square matrix of size k times k, with k = ", k, ". It is of size ", dim(S)[1], " times ", dim(S)[2], "."))
       stop()
     }
     if(length(dim(S)) > 2){
-      print(paste("The covariance matrix of the k constrained variances S should be an k times k matrix, with k = ", k, "."))
+      print(paste0("The covariance matrix of the k constrained variances S should be an k times k matrix, with k = ", k, ". It is of size ", dim(S), "."))
       stop()
     }
   } else{
@@ -110,13 +110,13 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   if(is.null(u)){
     n <- q-k
     if(n < 0){
-      print(paste("The input for k (i.e., the number of constrained variances) cannot exceed q (i.e., the number of latent variables, that is, the total number of variances). Either q or the dimension of S is incorrect, since n = q - k < 0, with q = ", q, "and k = ", k, "."))
+      print(paste0("The input for k (i.e., the number of constrained variances) cannot exceed q (i.e., the number of latent variables, that is, the total number of variances). Either q or the dimension of S is incorrect, since n = q - k < 0, with q = ", q, "and k = ", k, "."))
       stop()
     }
     u <- k*n + k*(k-1)/2
   }else{
     if(length(u) != 1){
-      print(paste("The argument u should be a scalar, that is, one number, that is, a vector with one element."))
+      print(paste0("The argument u should be a scalar, that is, one number, that is, a vector with one element."))
       stop()
     }
   }
@@ -159,8 +159,8 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     stop()
   }
   #
-  if(!is.logical(bootstrap)){
-    print(paste("The argument bootstrap should be logical, that is, have the value T(RUE) or F(ALSE)."))
+  if(!is.logical(bootstrap) & bootstrap != FALSE & bootstrap != TRUE){
+    print(paste("The argument bootstrap should be logical, that is, have the value T(RUE) or F(ALSE); or 1 or 0; not ", bootstrap))
     stop()
   }
   if(bootstrap == TRUE){
@@ -174,8 +174,8 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     }
   }
   #
-  if(PrintPlot != T & PrintPlot != F){
-    print(paste("The argument 'PrintPlot' should be TRUE or FALSE, not ", PrintPlot, "."))
+  if(!is.logical(PrintPlot) & PrintPlot != FALSE & PrintPlot != TRUE){
+    print(paste("The argument 'PrintPlot' should be T(RUE) or F(ALSE); or 1 or 0; not ", PrintPlot))
     stop()
   }
   if(length(Min) != 1){
@@ -285,11 +285,11 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     }else{
       # -- Determine p-value --
       names(weight) <- NULL
-      c2_compare = Chi2_clpm - Chi2_riclpm
+      c2_compare <- Chi2_clpm - Chi2_riclpm
       CritValSmallerDiffChi2 <- (c2 < c2_compare)
-      p = 0
+      p <- 0
       for(teller in 1:(k+1)){
-        p = p + weight[teller] * (1-pchisq(c2_compare, (u+teller-1))) #df_Chi2 = u until u+k
+        p <- p + weight[teller] * (1-pchisq(c2_compare, (u+teller-1))) #df_Chi2 = u until u+k
       }
       pSmallerAlpha <- (p < alpha)
       #if(p < 0.001){

@@ -28,17 +28,17 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 
 \item{S}{The k times k covariance matrix of the k constrained variances.}
 
-\item{Chi2_clpm}{The Chi-square value for the CLPM. In case of another test of variances, this refers to the Chi-square of the model with the k constrained variances (or, in general, the more constrained model). By default, Chi2_clpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.}
+\item{Chi2_clpm}{The Chi-square value for the CLPM. In case of another test of variances, this refers to the Chi-square of the model with the k constrained variances (or, in general, the more constrained model). By default, Chi2_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
 
-\item{Chi2_riclpm}{The Chi-square value for the RI-CLPM. In case of another test of variances, this refers to the Chi-square of the model without the k constrained variances (or, in general, the less constrained model). By default, Chi2_riclpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.}
+\item{Chi2_riclpm}{The Chi-square value for the RI-CLPM. In case of another test of variances, this refers to the Chi-square of the model without the k constrained variances (or, in general, the less constrained model). By default, Chi2_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
 
-\item{df_clpm}{The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.}
+\item{df_clpm}{The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
 
-\item{df_riclpm}{The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weighst will be given and not the Chi-bar-square statistic with correspoding p-value.}
+\item{df_riclpm}{The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
 
 \item{alpha}{The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.}
 
-\item{bootstrap}{Indicator (FALSE/TRUE) to determine the Chi-bar-square weigths based on bootstrap (instead of using the package ic.infer). By default, bootstrap = FALSE.}
+\item{bootstrap}{Indicator (FALSE/TRUE or 0/1) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).}
 
 \item{seed}{The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.}
 
@@ -46,7 +46,7 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 
 \item{u}{The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.}
 
-\item{PrintPlot}{Optional. Indicator whether Chi-bar-square distribution plot should be printed (TRUE; default) or not (FALSE); together with the critical value.}
+\item{PrintPlot}{Optional. Indicator (FALSE/TRUE or 0/1) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).}
 
 \item{Min}{Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.}
 
@@ -77,16 +77,16 @@ Chi2_riclpm <- 3.2127 #The Chi-square value of RI-CLPM is 3.2127
 df_clpm <- 4   #The df in CLPM is 4
 df_riclpm <- 1 #The df in RI-CLPM is 1
 
-# Run function to obtain Chi-bar-square weigths and critical value for the Chi-bar-square statistic
+# Run function to obtain Chi-bar-square weights and critical value for the Chi-bar-square statistic
 ChiBarSq.DiffTest(q, S)
 
-# Run function to obtain Chi-bar-square weigths based on bootstrap
+# Run function to obtain Chi-bar-square weights based on bootstrap
 ChiBarSq.DiffTest(q, S, bootstrap = T, seed = 123, iter = 100000)
 
-# Run function to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+# Run function to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
 
-# Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weigths and critical value)
+# Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 # For simplicity, we use the same example as above and calculate u based on input above - normally you would know u (and not q).
 q <- 2
 k <- 2
