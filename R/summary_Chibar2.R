@@ -37,7 +37,7 @@ summary.ChiBar2 <- function(x, digits = NULL)
     }
     #
     cat("\n")
-    cat("The Chi-bar-square test results\n")
+    cat("The Chi-bar-square difference test\n")
     print(md_table(DF2, digits = NrDigits, sig.digits = sig.digits, align = align, row.names = FALSE))
     cat("\n")
     cat("The Chi-bar-square weights used in the test\n")

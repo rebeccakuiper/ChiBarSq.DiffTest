@@ -33,7 +33,7 @@ print.ChiBar2 <- function(x, digits = NULL)
     #
     #
     cat("\n")
-    cat("The Chi-bar-square test results\n")
+    cat("The Chi-bar-square difference test\n")
     #cat("\n")
     print(DF2, digits = NrDigits, right = F)
     #cat("\n")

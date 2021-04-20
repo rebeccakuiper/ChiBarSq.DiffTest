@@ -24,6 +24,7 @@
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom ic.infer ic.weights
 #' @importFrom nleqslv nleqslv
+#' @importFrom ggplot2 ggplot
 #' @export
 #' @examples
 #'
@@ -263,7 +264,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   #FindC2(xstart)
   sol <- nleqslv(xstart, FindC2, control=list(btol=.001, allowSingular = TRUE))
   if(sol$fvec > 0.01){
-    message = "For these data, the critical value (c^2) cannot be calculated."
+    message = "For these data, the critical value for the Chi-bar-square difference test (c^2) cannot be calculated."
     final <- list(message = message,
                   k=k, u=u, S = S, ChiBar2_weights = weight)
     # CovMx_of_k_constrained_variances = S
@@ -324,7 +325,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         #)
       }
 
-      message = paste0("The p-value of the Chi2-bar difference test will be calculated after filling in the Chi2's of the CLPM and RI-CLPM (and their degrees of freedom).")
+      message = paste0("The observed value and corresponding p-value of the Chi-bar-square difference test will be calculated after filling in the Chi2's of the CLPM and RI-CLPM (and their degrees of freedom).")
       if(PrintPlot == T){
         final <- list(message = message,
                       k=k, u=u, S = S, ChiBar2_weights = weight,
@@ -414,9 +415,9 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         #for(teller in 1:(k+1)){
         #  p_diffdf = p_diffdf + weight[teller] * (1-pchisq(c2_compare, (u+teller-1))) #df_Chi2 = u until u+k
         #}
-        message = paste0("The difference in degrees of freedom, ", diff_df, ", does not equal k*(k+1)/2 = ", (k*(k+1)/2), ", please check your input. The p-value below is determined based on k = ", k, " and u = ", u, ".")
+        message = paste0("The difference in degrees of freedom, ", diff_df, ", does not equal k*(k+1)/2 = ", (k*(k+1)/2), ", please check your input. The rendered p-value is determined based on k = ", k, " and u = ", u, ".")
       }else if(c2_compare < 0){
-        message = paste0("The difference in Chi2's (Chi2_clpm - Chi2_riclpm = ", c2_compare, ") is negative. You probably have switched them around.")
+        message = paste0("The difference in Chi-square's (Chi2_clpm - Chi2_riclpm = ", c2_compare, ") is negative. The rendered p-value is determined based on switching them around.")
       }else{
         message = NULL
       }
