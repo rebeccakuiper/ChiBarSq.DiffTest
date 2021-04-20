@@ -10,22 +10,24 @@
 #' @param df_clpm The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
 #' @param df_riclpm The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
 #' @param alpha The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.
-#' @param bootstrap Indicator (FALSE/TRUE or 0/1) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).
+#' @param bootstrap Indicator (TRUE/FALSE or 1/0) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).
 #' @param seed The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.
 #' @param iter The number of iterations, used in case bootstrap = TRUE. By changing this number, the sensitivity/precision of the results can be inspected. By default, iter = 100000.
 #' @param u The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.
-#' @param PrintPlot Optional. Indicator (FALSE/TRUE or 0/1) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).
+#' @param PrintPlot Optional. Indicator (TRUE/FALSE or 1/0) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).
 #' @param Min Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.
 #' @param Max Optional. Maximum time used in the Chi-bar-square distribution plot. By default, Max = 20. If Max is lower than critical value c2, then it is changed to c2+1.
 #' @param Step Optional. The step-size taken in the Chi-bar-square distribution plot. By default, Step = 1.
 #'
-#' @return The output comprises, among others, the Chi-bar-square weigths and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
+#' @return The output comprises, among other things, the Chi-bar-square weights and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
 #' @importFrom quadprog solve.QP
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom ic.infer ic.weights
 #' @importFrom nleqslv nleqslv
 #' @export
 #' @examples
+#'
+#' # library(ChiBarSq.DiffTest)
 #'
 #' # Compare fit CLPM vs RI-CLPM
 #' # For an elaborate example, see https://ellenhamaker.github.io/RI-CLPM/lavaan.html#(bar{chi}^{2})-test.
@@ -51,6 +53,16 @@
 #' # Run function to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 #' ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
 #'
+#' # Different types of output options are possible:
+#' ChiBar2 <- ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
+#' ChiBar2 # same as print(ChiBar2)
+#' summary(ChiBar2)
+#' print(ChiBar2, digits = 4)
+#' summary(ChiBar2, digits = 4)
+#' # In Rstudio, use 'ChiBar2$' to see what output there is:
+#' # ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+#'
+#'
 #' # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 #' # For simplicity, we use the same example as above and calculate u based on input above - normally you would know u (and not q).
 #' q <- 2
@@ -71,22 +83,20 @@
 ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL, PrintPlot = TRUE, Min = 0, Max = 20, Step = 1) {
 
   # Checks:
-  if(is.null(u)){
-    if(length(q) != 1){
-      print(paste("The argument q should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
-      stop()
-    }
-    if(q %% 1 != 0){
-      print(paste("The argument q should be an integer."))
-      stop()
-    }
+  if(length(q) != 1){
+    print(paste0("The argument q should be an integer (i.e., a scalar which is an integer and not multiple (integer) values. Currently, q = ", q))
+    stop()
+  }
+  if(q %% 1 != 0){
+    print(paste0("The argument q should be an integer. Currently, q = ", q))
+    stop()
   }
   #
   # Check on S
   if(length(S) != 1){
     if(is.null(dim(S))){
       if(!is.null(length(S))){
-        print(paste0("The argument S is not a matrix of size k times k. It is of size ", dim(S)[1], " times ", dim(S)[2], "."))
+        print(paste0("The argument S is not a matrix of size k times k. Currently, it is of size ", dim(S)[1], " times ", dim(S)[2], "."))
         stop()
       }else{
         print(paste0("The argument S is not found: The k times k covariance matrix of the k constrained variances S is unknown, but should be part of the input."))
@@ -95,12 +105,16 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     }
     k <- dim(S)[1]
     #
-    if(dim(S)[1] != dim(S)[2]){
-      print(paste0("The covariance matrix of the k constrained variances S should be a square matrix of size k times k, with k = ", k, ". It is of size ", dim(S)[1], " times ", dim(S)[2], "."))
+    if(length(dim(S)) < 2){
+      print(paste0("The covariance matrix of the k constrained variances S should be an k times k matrix."))
       stop()
     }
     if(length(dim(S)) > 2){
-      print(paste0("The covariance matrix of the k constrained variances S should be an k times k matrix, with k = ", k, ". It is of size ", dim(S), "."))
+      print(paste0("The covariance matrix of the k constrained variances S should be an k times k matrix. Currently, it is of size ", dim(S)))
+      stop()
+    }
+    if(dim(S)[1] != dim(S)[2]){
+      print(paste0("The covariance matrix of the k constrained variances S should be a square matrix. It should be a matrix of size k times k. Currently, it is of size ", dim(S)[1], " times ", dim(S)[2], "."))
       stop()
     }
   } else{
@@ -110,13 +124,13 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   if(is.null(u)){
     n <- q-k
     if(n < 0){
-      print(paste0("The input for k (i.e., the number of constrained variances) cannot exceed q (i.e., the number of latent variables, that is, the total number of variances). Either q or the dimension of S is incorrect, since n = q - k < 0, with q = ", q, "and k = ", k, "."))
+      print(paste0("The input for k (i.e., the number of constrained variances, that is, the dimension of S) cannot exceed q (i.e., the number of latent variables, that is, the total number of variances). Either q or k is incorrect, since n = q - k < 0, with q = ", q, "and k = ", k, "."))
       stop()
     }
     u <- k*n + k*(k-1)/2
   }else{
     if(length(u) != 1){
-      print(paste0("The argument u should be a scalar, that is, one number, that is, a vector with one element."))
+      print(paste0("The argument u should be a scalar, that is, one number, that is, a vector with one element. Currently, u = ", u))
       stop()
     }
   }
@@ -126,68 +140,68 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   #S = the k-times-k covariance matrix of the (k) constrained variances.
 
   if(!is.null(Chi2_clpm) & length(Chi2_clpm) != 1){
-    print(paste("The argument Chi2_clpm should be a scalar, that is, one number, that is, a vector with one element (or NULL)."))
+    print(paste0("The argument Chi2_clpm should be a scalar, that is, one number, that is, a vector with one element (or NULL). Currently, Chi2_clpm = ", Chi2_clpm))
     stop()
   }
   if(!is.null(Chi2_riclpm) & length(Chi2_riclpm) != 1){
-    print(paste("The argument Chi2_riclpm should be a scalar, that is, one number, that is, a vector with one element (or NULL)."))
+    print(paste0("The argument Chi2_riclpm should be a scalar, that is, one number, that is, a vector with one element (or NULL). Currently, Chi2_riclpm = ", Chi2_riclpm))
     stop()
   }
   if(!is.null(df_clpm)){
     if(length(df_clpm) != 1){
-      print(paste("The argument df_clpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
+      print(paste0("The argument df_clpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values. Currently, df_clpm = ", df_clpm))
       stop()
     }
     if(df_clpm %% 1 != 0){
-      print(paste("The argument df_clpm should be an integer."))
+      print(paste0("The argument df_clpm should be an integer. Currently, df_clpm = ", df_clpm))
       stop()
     }
   }
   if(!is.null(df_riclpm)){
     if(length(df_riclpm) != 1){
-      print(paste("The argument df_riclpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values."))
+      print(paste0("The argument df_riclpm should be an integer (i.e., a scalar which is an integer and not multiple (integer) values. Currently, df_riclpm = ", df_riclpm))
       stop()
     }
     if(df_riclpm %% 1 != 0){
-      print(paste("The argument df_riclpm should be an integer."))
+      print(paste0("The argument df_riclpm should be an integer. Currently, df_riclpm = ", df_riclpm))
       stop()
     }
   }
   #
   if(length(alpha) != 1){
-    print(paste("The argument alpha should be a scalar, that is, one number, that is, a vector with one element."))
+    print(paste0("The argument alpha should be a scalar, that is, one number, that is, a vector with one element. Currently, alpha = ", alpha))
     stop()
   }
   #
   if(!is.logical(bootstrap) & bootstrap != FALSE & bootstrap != TRUE){
-    print(paste("The argument bootstrap should be logical, that is, have the value T(RUE) or F(ALSE); or 1 or 0; not ", bootstrap))
+    print(paste0("The argument bootstrap should be logical, that is, have the value T(RUE) or F(ALSE); or 1 or 0; not ", bootstrap))
     stop()
   }
   if(bootstrap == TRUE){
     if(length(seed) != 1){
-      print(paste("The argument seed should be a scalar, that is, one number, that is, a vector with one element."))
+      print(paste0("The argument seed should be a scalar, that is, one number, that is, a vector with one element. Currently, seed = ", seed))
       stop()
     }
     if(length(iter) != 1){
-      print(paste("The argument iter should be a scalar, that is, one number, that is, a vector with one element."))
+      print(paste0("The argument iter should be a scalar, that is, one number, that is, a vector with one element. Currently, iter = ", iter))
       stop()
     }
   }
   #
   if(!is.logical(PrintPlot) & PrintPlot != FALSE & PrintPlot != TRUE){
-    print(paste("The argument 'PrintPlot' should be T(RUE) or F(ALSE); or 1 or 0; not ", PrintPlot))
+    print(paste0("The argument 'PrintPlot' should be T(RUE) or F(ALSE); or 1 or 0; not ", PrintPlot))
     stop()
   }
   if(length(Min) != 1){
-    print(paste("The argument Min should be a scalar, that is, one number, that is, a vector with one element."))
+    print(paste0("The argument Min should be a scalar, that is, one number, that is, a vector with one element. Currently, Min = ", Min))
     stop()
   }
   if(length(Max) != 1){
-    print(paste("The argument Max should be a scalar, that is, one number, that is, a vector with one element."))
+    print(paste0("The argument Max should be a scalar, that is, one number, that is, a vector with one element. Currently, Max = ", Max))
     stop()
   }
   if(length(Step) != 1){
-    print(paste("The argument Step should be a scalar, that is, one number, that is, a vector with one element."))
+    print(paste0("The argument Step should be a scalar, that is, one number, that is, a vector with one element. Currently, Step = ", Step))
     stop()
   }
 
@@ -249,8 +263,10 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   sol <- nleqslv(xstart, FindC2, control=list(btol=.001, allowSingular = TRUE))
   if(sol$fvec > 0.01){
     message = "For these data, the critical value (c^2) cannot be calculated."
-    final <- list(message = message, CovMx_of_k_constrained_variances = S, ChiBar2_weights = LP)
-    return(final)
+    final <- list(message = message,
+                  k=k, u=u, S = S, ChiBar2_weights = weight)
+    # CovMx_of_k_constrained_variances = S
+    #return(final)
   }else{
     c2 <- sol$x
 
@@ -281,7 +297,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       final <- list(message = message,
                     k=k, u=u, S = S, ChiBar2_weights = weight,
                     critical_value = c2)
-      return(final)
+      #return(final)
     }else{
       # -- Determine p-value --
       names(weight) <- NULL
@@ -293,7 +309,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       }
       pSmallerAlpha <- (p < alpha)
       #if(p < 0.001){
-      #  p <- paste(p, " < .001")
+      #  p <- paste0(p, " < .001")
       #}
 
 
@@ -301,11 +317,11 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       if(PrintPlot == T){
         if(Max < c2_compare){
           Max <- c2_compare + 1
-          X <- seq(Min,Max,by=Step)
-          ChiMix <- 0
-          for(i in 0:k){
-            ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
-          }
+        }
+        X <- seq(Min,Max,by=Step)
+        ChiMix <- 0
+        for(i in 0:k){
+          ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
         }
         plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
         lines(X, ChiMix)
@@ -334,7 +350,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         #k=k, u=u, CovMx_of_k_constrained_variances = S, ChiBar2_weights = weight,
         #critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha )
         #p_value_diffdf=p_diffdf,
-        return(final)
+        #return(final)
       }else if(c2_compare < 0){
         message = paste0("The difference in Chi2's (Chi2_clpm - Chi2_riclpm = ", c2_compare, ") is negative. You probably have switched them around.")
         final <- list(message = message,
@@ -345,12 +361,14 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         #              critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
         final <- list(k=k, u=u, S = S, ChiBar2_weights = weight,
                       critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
-        return(final)
+        #return(final)
       }
 
     }
   }
 
+  class(final) <- c("ChiBar2", "list")
+  final
 
 } # end of function
 

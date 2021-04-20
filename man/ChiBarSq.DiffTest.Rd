@@ -38,7 +38,7 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 
 \item{alpha}{The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.}
 
-\item{bootstrap}{Indicator (FALSE/TRUE or 0/1) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).}
+\item{bootstrap}{Indicator (TRUE/FALSE or 1/0) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).}
 
 \item{seed}{The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.}
 
@@ -46,7 +46,7 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 
 \item{u}{The number of unconstrained parameters of interest. In case of a more general test than a variance test, 'u' can easily be specified and there is no 'q'. For more details, see Stoel et al. (2006). By default, a variance test is assumed and thus the argument u = NULL implying that u = k*n + k*(k-1)/2 is used in the calculation. If 'u' is specified, then 'q' is discarded and can be set to NULL.}
 
-\item{PrintPlot}{Optional. Indicator (FALSE/TRUE or 0/1) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).}
+\item{PrintPlot}{Optional. Indicator (TRUE/FALSE or 1/0) whether Chi-bar-square distribution plot should be printed (TRUE or 1) or not (FALSE or 0); together with the critical value. By default, PrintPlot = TRUE (and thus a plot is rendered).}
 
 \item{Min}{Optional. Minimum value used in the Chi-bar-square distribution plot. By default, Min = 0.}
 
@@ -55,12 +55,14 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 \item{Step}{Optional. The step-size taken in the Chi-bar-square distribution plot. By default, Step = 1.}
 }
 \value{
-The output comprises, among others, the Chi-bar-square weigths and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
+The output comprises, among other things, the Chi-bar-square weights and critical value for the Chi-bar-square statistic (if asked for) the Chi-bar-square statistic and corresponding p-value.
 }
 \description{
 This function calculates the Chi-bar-square difference test of the RI-CLPM versus the CLPM or a general variance test. The first is discussed in Hamaker, Kuiper, and Grasman (2015) and the second in Stoel et al. (2006). There is also an interactive web application on my website: Chi-bar-square difference test (\url{https://www.uu.nl/staff/RMKuiper/Websites\%20\%2F\%20Shiny\%20apps}).
 }
 \examples{
+
+# library(ChiBarSq.DiffTest)
 
 # Compare fit CLPM vs RI-CLPM
 # For an elaborate example, see https://ellenhamaker.github.io/RI-CLPM/lavaan.html#(bar{chi}^{2})-test.
@@ -85,6 +87,16 @@ ChiBarSq.DiffTest(q, S, bootstrap = T, seed = 123, iter = 100000)
 
 # Run function to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
+
+# Different types of output options are possible:
+ChiBar2 <- ChiBarSq.DiffTest(q, S, Chi2_clpm, Chi2_riclpm, df_clpm, df_riclpm)
+ChiBar2 # same as print(ChiBar2)
+summary(ChiBar2)
+print(ChiBar2, digits = 4)
+summary(ChiBar2, digits = 4)
+# In Rstudio, use 'ChiBar2$' to see what output there is:
+# ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+
 
 # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
 # For simplicity, we use the same example as above and calculate u based on input above - normally you would know u (and not q).
