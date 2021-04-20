@@ -60,7 +60,8 @@
 #' print(ChiBar2, digits = 4)
 #' summary(ChiBar2, digits = 4)
 #' # In Rstudio, use 'ChiBar2$' to see what output there is:
-#' # ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+#' # ChiBar2$message; ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+#' # and possibly: ChiBar2$ChiBar2_plot
 #'
 #'
 #' # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
@@ -270,33 +271,71 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   }else{
     c2 <- sol$x
 
-
-    # Plot
-    if(PrintPlot == T){
-      if(Max < c2){Max <- c2 + 1}
-      X <- seq(Min,Max,by=Step)
-      ChiMix <- 0
-      for(i in 0:k){
-        ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
-      }
-      plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
-      lines(X, ChiMix)
-      abline(v=c2, col = "red")
-      #
-      legend("topright",
-             legend = c("critical value"),
-             lty = 1,
-             col = c("red")
-      )
-    }
-
-
     #if( (Chi2_clpm == 0) & (Chi2_riclpm == 0) ){
     if( is.null(Chi2_clpm) & is.null(Chi2_riclpm) ){
+
+      # Plot
+      if(PrintPlot == T){
+        if(Max < c2){Max <- c2 + 1}
+        X <- seq(Min, Max, by=Step)
+        ChiMix <- 0
+        for(i in 0:k){
+          ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
+        }
+        df <- data.frame(
+          X = X,
+          ChiMix = ChiMix
+        )
+        #
+        Xlab <- "x"
+        Ylab <- expression({bar(Chi)^2} (x)) #"Chi-bar-square(x)"
+        Title <- expression({bar(Chi)^2}~('Chi'-bar-square)~distribution) #"Chi-bar-square distribution"
+        Lty <- 1
+        Col <- c("red")
+        legendT <- c("critical value")
+        Labels <- rep(as.character(legendT), length(X))
+        #
+        #library(ggplot2)
+        ChiBar2_plot <- ggplot(df, aes(X, ChiMix)) +
+          geom_line(lwd = 0.75, color = "black") +
+          geom_vline(aes(xintercept = c2, color = "critical_value")) +
+          scale_linetype_manual(name = " ", values = Lty, labels = legendT) +
+          scale_color_manual(name = " ", values = c(critical_value = Col[1]), labels = legendT) +
+          ylab(Ylab) +
+          xlab(Xlab) +
+          ggtitle(Title) +
+          theme_classic() +
+          theme(plot.title = element_text(margin = margin(t = 20))) +
+          ylim(0,1) +
+          theme(
+            legend.key.width = unit(1, "lines"),
+            legend.spacing.x = unit(1, "lines"),
+            legend.text = element_text(size = 12)
+          ) #; ChiBar2_plot
+        #
+        #plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
+        #lines(X, ChiMix)
+        #abline(v=c2, col = "red")
+        ##
+        #legend("topright",
+        #       legend = c("critical value"),
+        #       lty = 1,
+        #       col = c("red")
+        #)
+      }
+
       message = paste0("The p-value of the Chi2-bar difference test will be calculated after filling in the Chi2's of the CLPM and RI-CLPM (and their degrees of freedom).")
-      final <- list(message = message,
-                    k=k, u=u, S = S, ChiBar2_weights = weight,
-                    critical_value = c2)
+      if(PrintPlot == T){
+        final <- list(message = message,
+                      k=k, u=u, S = S, ChiBar2_weights = weight,
+                      critical_value = c2,
+                      ChiBar2_plot = ChiBar2_plot)
+        print(ChiBar2_plot)
+      }else{
+        final <- list(message = message,
+                      k=k, u=u, S = S, ChiBar2_weights = weight,
+                      critical_value = c2)
+      }
       #return(final)
     }else{
       # -- Determine p-value --
@@ -318,21 +357,53 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         if(Max < c2_compare){
           Max <- c2_compare + 1
         }
-        X <- seq(Min,Max,by=Step)
+        X <- seq(Min, Max, by=Step)
         ChiMix <- 0
         for(i in 0:k){
           ChiMix <- ChiMix + weight[i+1]*dchisq(X, (u+i))
         }
-        plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
-        lines(X, ChiMix)
-        abline(v=c2, col = "red")
-        abline(v=c2_compare, col = "blue")
-        #
-        legend("topright",
-               legend = c("critical value", "observed value"),
-               lty = 1,
-               col = c("red", "blue")
+        df <- data.frame(
+          X = X,
+          ChiMix = ChiMix
         )
+        #
+        Xlab <- "x"
+        Ylab <- expression({bar(Chi)^2} (x)) #"Chi-bar-square(x)"
+        Title <- expression({bar(Chi)^2}~('Chi'-bar-square)~distribution) #"Chi-bar-square distribution"
+        Lty <- 1
+        Col <- c("red", "blue")
+        legendT <- c("critical value", "observed value")
+        Labels <- rep(as.character(legendT), length(X))
+        #
+        #library(ggplot2)
+        ChiBar2_plot <- ggplot(df, aes(X, ChiMix)) +
+          geom_line(lwd = 0.75, color = "black") +
+          geom_vline(aes(xintercept = c2, color = "critical")) +
+          geom_vline(aes(xintercept = c2_compare, color = "observed")) +
+          scale_linetype_manual(name = " ", values = Lty, labels = legendT) +
+          scale_color_manual(name = " ", values = c(critical = Col[1], observed = Col[2]), labels = legendT) +
+          ylab(Ylab) +
+          xlab(Xlab) +
+          ggtitle(Title) +
+          theme_classic() +
+          theme(plot.title = element_text(margin = margin(t = 20))) +
+          ylim(0,1) +
+          theme(
+            legend.key.width = unit(1, "lines"),
+            legend.spacing.x = unit(1, "lines"),
+            legend.text = element_text(size = 12)
+          ) ; ChiBar2_plot
+        #
+        #plot(X, ChiMix, xlab = "x", ylab = "Chi-bar-square(x)", main = "Chi-bar-square distribution")
+        #lines(X, ChiMix)
+        #abline(v=c2, col = "red")
+        #abline(v=c2_compare, col = "blue")
+        ##
+        #legend("topright",
+        #       legend = c("critical value", "observed value"),
+        #       lty = 1,
+        #       col = c("red", "blue")
+        #)
       }
 
 
@@ -344,25 +415,23 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
         #  p_diffdf = p_diffdf + weight[teller] * (1-pchisq(c2_compare, (u+teller-1))) #df_Chi2 = u until u+k
         #}
         message = paste0("The difference in degrees of freedom, ", diff_df, ", does not equal k*(k+1)/2 = ", (k*(k+1)/2), ", please check your input. The p-value below is determined based on k = ", k, " and u = ", u, ".")
-        final <- list(message = message,
-                      k=k, u=u, S = S, ChiBar2_weights = weight,
-                      critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha )
-        #k=k, u=u, CovMx_of_k_constrained_variances = S, ChiBar2_weights = weight,
-        #critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha )
-        #p_value_diffdf=p_diffdf,
-        #return(final)
       }else if(c2_compare < 0){
         message = paste0("The difference in Chi2's (Chi2_clpm - Chi2_riclpm = ", c2_compare, ") is negative. You probably have switched them around.")
-        final <- list(message = message,
-        k=k, u=u, S = S, ChiBar2_weights = weight,
-        critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha )
       }else{
-        #final <- list(k=k, u=u, CovMx_of_k_constrained_variances = S, ChiBar2_weights = weight,
-        #              critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
-        final <- list(k=k, u=u, S = S, ChiBar2_weights = weight,
-                      critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
-        #return(final)
+        message = NULL
       }
+        if(PrintPlot == T){
+          final <- list(message = message,
+                        k=k, u=u, S = S, ChiBar2_weights = weight,
+                        critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha,
+                        ChiBar2_plot = ChiBar2_plot)
+          print(ChiBar2_plot)
+        }else{
+          final <- list(message = message,
+                        k=k, u=u, S = S, ChiBar2_weights = weight,
+                        critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
+        }
+        #return(final)
 
     }
   }

@@ -95,7 +95,8 @@ summary(ChiBar2)
 print(ChiBar2, digits = 4)
 summary(ChiBar2, digits = 4)
 # In Rstudio, use 'ChiBar2$' to see what output there is:
-# ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+# ChiBar2$message; ChiBar2$k; ChiBar2$u; ChiBar2$S; ChiBar2$ChiBar2_weights; ChiBar2$critical_value; ChiBar2$DiffChi2; ChiBar2$CritValSmallerDiffChi2; ChiBar2$p_value; ChiBar2$pSmallerAlpha
+# and possibly: ChiBar2$ChiBar2_plot
 
 
 # Run function based on using 'u' as input to do Chi-bar-square test (and also obtain Chi-bar-square weights and critical value)
