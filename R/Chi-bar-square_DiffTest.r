@@ -25,6 +25,8 @@
 #' @importFrom ic.infer ic.weights
 #' @importFrom nleqslv nleqslv
 #' @importFrom ggplot2 ggplot
+#' @export print.ChiBar2
+#' @export summary.ChiBar2
 #' @export
 #' @examples
 #'
