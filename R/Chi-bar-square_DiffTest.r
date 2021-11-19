@@ -123,6 +123,7 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     }
   } else{
     k <- 1
+    S <- as.matrix(S)
   }
 
   if(is.null(u)){
@@ -227,7 +228,6 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
   ##########################################################################
   ##########################################################################
 
-
   # LPs/Weights
   if(bootstrap == TRUE){
     set.seed(seed)
@@ -269,8 +269,6 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     message = "For these data, the critical value for the Chi-bar-square difference test (c^2) cannot be calculated."
     final <- list(message = message,
                   k=k, u=u, S = S, ChiBar2_weights = weight)
-    # CovMx_of_k_constrained_variances = S
-    #return(final)
   }else{
     c2 <- sol$x
 
@@ -339,7 +337,6 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
                       k=k, u=u, S = S, ChiBar2_weights = weight,
                       critical_value = c2)
       }
-      #return(final)
     }else{
       # -- Determine p-value --
       names(weight) <- NULL
@@ -423,18 +420,18 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       }else{
         message = NULL
       }
-        if(PrintPlot == T){
-          final <- list(message = message,
-                        k=k, u=u, S = S, ChiBar2_weights = weight,
-                        critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha,
-                        ChiBar2_plot = ChiBar2_plot)
-          print(ChiBar2_plot)
-        }else{
-          final <- list(message = message,
-                        k=k, u=u, S = S, ChiBar2_weights = weight,
-                        critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
-        }
-        #return(final)
+
+      if(PrintPlot == T){
+        final <- list(message = message,
+                      k=k, u=u, S = S, ChiBar2_weights = weight,
+                      critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha,
+                      ChiBar2_plot = ChiBar2_plot)
+        print(ChiBar2_plot)
+      }else{
+        final <- list(message = message,
+                      k=k, u=u, S = S, ChiBar2_weights = weight,
+                      critical_value = c2, DiffChi2 = c2_compare, CritValSmallerDiffChi2 = CritValSmallerDiffChi2, p_value=p, pSmallerAlpha = pSmallerAlpha)
+      }
 
     }
   }
