@@ -86,6 +86,9 @@
 
 ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL, PrintPlot = TRUE, Min = 0, Max = 20, Step = 1) {
 
+  # TO DO RMK: q can be NULL, then u is needed, make sure that that works!
+  # Check whether SAs already changed that!
+
   # Checks:
   if(length(q) != 1){
     print(paste0("The argument q should be an integer (i.e., a scalar which is an integer and not multiple (integer) values. Currently, q = ", q))
@@ -408,15 +411,20 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
 
 
       diff_df = df_clpm - df_riclpm
-      if(diff_df != k*(k+1)/2){
-        #Could also calculate p-values based on diff_df, but that is weird, most probably df_diff consists of k and u (so, diff_df is not equal to k)
+      # TO DO RMK: Why do I check this at the end? If I do it before, I can also adjust the values based on the errors below...
+      if(diff_df != (u + k)){ # NOT k*(k+1)/2 (= number of elements in block matrix 2,2, so neglecting block matrix 1,2; while u + k = nr of elt's of both those block matrices )
+        #Could also calculate p-values based on diff_df, but that is weird, most probably df_diff consists of k and u (so, diff_df is not equal to k - it is equal to u+k)
         #p_diffdf = 0
         #for(teller in 1:(k+1)){
         #  p_diffdf = p_diffdf + weight[teller] * (1-pchisq(c2_compare, (u+teller-1))) #df_Chi2 = u until u+k
         #}
-        message = paste0("The difference in degrees of freedom, ", diff_df, ", does not equal k*(k+1)/2 = ", (k*(k+1)/2), ", please check your input. The rendered p-value is determined based on k = ", k, " and u = ", u, ".")
+        message = paste0("The difference in degrees of freedom, ", diff_df, ", does not equal u + k = ", (u + k), ", please check your input. The rendered p-value is determined based on k = ", k, " and u = ", u, ".")
+        #TO DO
       }else if(c2_compare < 0){
         message = paste0("The difference in Chi-square's (Chi2_clpm - Chi2_riclpm = ", c2_compare, ") is negative. The rendered p-value is determined based on switching them around.")
+        # TO DO RMK: I do not actually do this right... I am also not sure whether I should do that (and does it matter?)
+        # TO DO RMK: Btw, I can/should also do this when diff_df < 0, this makes more sense - then start with this check.
+        # BUT: I do not use diff_df (or the df) in my calculations, so not helpful. I only use it as check on the plausability of the input here.
       }else{
         message = NULL
       }
