@@ -8,7 +8,7 @@ print.ChiBar2 <- function(x, digits = NULL)
   x <- as.list(x)
 
   if(is.null(digits)){
-    NrDigits <- 3
+    NrDigits <- 5
   }else{
     NrDigits <- digits
   }
@@ -22,12 +22,12 @@ print.ChiBar2 <- function(x, digits = NULL)
     names(w) <- 0:(length(w)-1)
     DF1 <- data.frame(ChiBar2_weights = w)
     if(is.null(x$DiffChi2)) {
-      DF2 <- data.frame(critical_value = x$critical_value,
+      DF2 <- data.frame(critical_value = sprintf("%.3f", x$critical_value),
                         row.names = "")
     }else{
-      DF2 <- data.frame(critical_value = x$critical_value,
-                        DiffChi2 = x$DiffChi2,
-                        p_value = x$p_value,
+      DF2 <- data.frame(critical_value = sprintf("%.3f", x$critical_value),
+                        DiffChi2 = sprintf("%.3f", x$DiffChi2),
+                        p_value = sprintf("%.3f", x$p_value),
                         row.names = "")
     }
     #

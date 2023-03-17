@@ -9,6 +9,8 @@
 #' @param Chi2_riclpm The Chi-square value for the RI-CLPM. In case of another test of variances, this refers to the Chi-square of the model without the k constrained variances (or, in general, the less constrained model). By default, Chi2_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
 #' @param df_clpm The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
 #' @param df_riclpm The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.
+#' @param SB_clpm Optional. The Satorra-Bentler scaled Chi-square value for the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, SB_clpm = NULL; in that case, the difference test will be solely based on the unadjusted/regular Chi-square value.
+#' @param SB_riclpm Optional. The Satorra-Bentler scaled Chi-square value for the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, SB_riclpm = NULL; in that case, the difference test will be solely based on the unadjusted/regular Chi-square value.
 #' @param alpha The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.
 #' @param bootstrap Indicator (TRUE/FALSE or 1/0) whether the Chi-bar-square weights are determined using bootstrap (TRUE or 1) or using the package ic.infer (FALSE or 0; default). By default, bootstrap = FALSE (and thus ic.infer is used).
 #' @param seed The seed number, used in case bootstrap = TRUE. By changing this number, the sensitivity of the results can be inspected. By default, seed = 123.
@@ -84,7 +86,7 @@
 #' # Note: This is now again based on testing the CLPM versus the RI-CLPM, but this code is most helpful in case of a more general test than a 'k constrained variance test'. For more details, see Stoel et al. (2006).
 #'
 
-ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL, PrintPlot = TRUE, Min = 0, Max = 20, Step = 1) {
+ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clpm = NULL, df_riclpm = NULL, SB_clpm = NULL, SB_riclpm = NULL, alpha = 0.05, bootstrap = FALSE, seed = 123, iter = 100000, u = NULL, PrintPlot = TRUE, Min = 0, Max = 20, Step = 1) {
 
   # TO DO RMK: q can be NULL, then u is needed, make sure that that works!
   # Check whether SAs already changed that!
@@ -174,6 +176,15 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
       print(paste0("The argument df_riclpm should be an integer. Currently, df_riclpm = ", df_riclpm))
       stop()
     }
+  }
+  #
+  if(!is.null(SB_clpm) & length(SB_clpm) != 1){
+    print(paste0("The argument SB_clpm should be a scalar, that is, one number, that is, a vector with one element (or NULL). Currently, SB_clpm = ", SB_clpm))
+    stop()
+  }
+  if(!is.null(SB_riclpm) & length(SB_riclpm) != 1){
+    print(paste0("The argument SB_riclpm should be a scalar, that is, one number, that is, a vector with one element (or NULL). Currently, SB_riclpm = ", SB_riclpm))
+    stop()
   }
   #
   if(length(alpha) != 1){
@@ -343,7 +354,14 @@ ChiBarSq.DiffTest <- function(q, S, Chi2_clpm = NULL, Chi2_riclpm = NULL, df_clp
     }else{
       # -- Determine p-value --
       names(weight) <- NULL
-      c2_compare <- Chi2_clpm - Chi2_riclpm
+      if(!is.null(SB_clpm) & !is.null(SB_clpm)){
+      scf_clpm = Chi2_clpm/SB_clpm
+      scf_riclpm = Chi2_riclpm/SB_riclpm
+      cd = (df_clpm * scf_clpm - df_riclpm * scf_riclpm)/(df_clpm - df_riclpm)
+      c2_compare = (SB_clpm * scf_clpm - SB_riclpm * scf_riclpm)/cd
+      } else{
+        c2_compare <- Chi2_clpm - Chi2_riclpm
+      }
       CritValSmallerDiffChi2 <- (c2 < c2_compare)
       p <- 0
       for(teller in 1:(k+1)){

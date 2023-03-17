@@ -11,6 +11,8 @@ ChiBarSq.DiffTest(
   Chi2_riclpm = NULL,
   df_clpm = NULL,
   df_riclpm = NULL,
+  SB_clpm = NULL,
+  SB_riclpm = NULL,
   alpha = 0.05,
   bootstrap = FALSE,
   seed = 123,
@@ -35,6 +37,10 @@ Note: u = k*n + k*(k-1)/2 is the number of unconstrained variances and unconstra
 \item{df_clpm}{The degrees of freedom of the Chi-square test in the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, df_clpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
 
 \item{df_riclpm}{The degrees of freedom of the Chi-square test in the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, df_riclpm = NULL; in that case, only the Chi-bar-square weights will be given and not the Chi-bar-square statistic with corresponding p-value.}
+
+\item{SB_clpm}{Optional. The Satorra-Bentler scaled Chi-square value for the CLPM (i.e., the model with the k constrained variances or the more constrained model). By default, SB_clpm = NULL; in that case, the difference test will be solely based on the unadjusted/regular Chi-square value.}
+
+\item{SB_riclpm}{Optional. The Satorra-Bentler scaled Chi-square value for the RI-CLPM (i.e., the model without the k constrained variances or the less constrained model). By default, SB_riclpm = NULL; in that case, the difference test will be solely based on the unadjusted/regular Chi-square value.}
 
 \item{alpha}{The alpha level in determining the significance of the Chi-bar-square difference test. By default, alpha = 0.05.}
 
